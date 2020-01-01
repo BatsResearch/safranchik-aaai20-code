@@ -15,8 +15,13 @@ To get the code for generative models and other rule-aggregation methods, downlo
 To download the dependencies required to run our experiments, run
 
 ```
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
+
+Then, install SpaCy's  dictionary by running
+'''
+python3 -m spacy download en_core_web_sm
+'''
 
 ## Contributing
 
@@ -24,11 +29,11 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
 
 ## Authors
 
-* **Esteban Safranchik** 
+* **Esteban Safranchik**
 * **Shiying Luo**
 * **Stephen H. Bach**
 
@@ -37,4 +42,3 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
-
