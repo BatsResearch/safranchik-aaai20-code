@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 from wiser.data.dataset_readers import NCBIDiseaseDatasetReader
 from wiser.lf import LabelingFunction, LinkingFunction, UMLSMatcher, DictionaryMatcher
 from wiser.generative import get_label_to_ix, get_rules
@@ -16,12 +10,9 @@ from wiser.eval import *
 import pickle
 
 
-# ## Loads Data
+# Loads Data
 
-# ### Loads NCBI Data
-
-# In[2]:
-
+# Loads NCBI Data
 
 root = "../../data/"
 reader = NCBIDiseaseDatasetReader()
@@ -30,16 +21,10 @@ dev_data = reader.read('../data/NCBI/NCBIdevelopset_corpus.txt')
 test_data = reader.read('../data/NCBI/NCBItestset_corpus.txt')
 
 
-# In[3]:
-
-
 ncbi_docs = train_data + dev_data + test_data
 
 
-# ### Loads Dictionaries
-
-# In[4]:
-
+# Loads Dictionaries
 
 dict_core = set()
 dict_core_exact = set()
@@ -47,7 +32,7 @@ with open('../data/autoner_dicts/NCBI/dict_core.txt') as f:
     for line in f.readlines():
         line = line.strip().split()
         term = tuple(line[1:])
-        
+
         if len(term) > 1 or len(term[0]) > 3:
             dict_core.add(term)
         else:
@@ -67,10 +52,6 @@ dict_core |= to_add
 dict_core_exact.remove(("WT1",))
 dict_core_exact.remove(("VHL",))
 
-
-# In[6]:
-
-
 dict_full = set()
 
 with open('../data/autoner_dicts/NCBI/dict_full.txt') as f:
@@ -79,32 +60,23 @@ with open('../data/autoner_dicts/NCBI/dict_full.txt') as f:
         dict_full.add(tuple(line))
 
 
-# ## Applies Labeling Functions
-
-# In[7]:
-
+# Applies Labeling Functions
 
 lf = DictionaryMatcher("CoreDictionaryUncased", dict_core, uncased=True, i_label="I")
 lf.apply(ncbi_docs)
-
-
-# In[8]:
 
 
 lf = DictionaryMatcher("CoreDictionaryExact", dict_core_exact, i_label="I")
 lf.apply(ncbi_docs)
 
 
-# In[9]:
-
-
 class CancerLike(LabelingFunction):
     def apply_instance(self, instance):
         tokens = [token.text.lower() for token in instance['tokens']]
         labels = ['ABS'] * len(tokens)
-        
+
         suffixes = ("edema", "toma", "coma", "noma")
-        
+
         for i, token in enumerate(tokens):
             for suffix in suffixes:
                 if token.endswith(suffix) or token.endswith(suffix + "s"):
@@ -114,48 +86,40 @@ class CancerLike(LabelingFunction):
 lf = CancerLike()
 lf.apply(ncbi_docs)
 
-
-# In[10]:
-
-
 class CommonSuffixes(LabelingFunction):
-    
+
     suffixes = {"agia", "cardia", "trophy", "toxic", "itis", "emia", "pathy", "plasia"}
-    
+
     def apply_instance(self, instance):
         labels = ['ABS'] * len(instance['tokens'])
-        
+
         for i in range(len(instance['tokens'])):
             for suffix in self.suffixes:
                 if instance['tokens'][i].lemma_.endswith(suffix):
                     labels[i] = 'I'
         return labels
-    
+
 lf = CommonSuffixes()
 lf.apply(ncbi_docs)
 
-
-# In[11]:
-
-
 class Deficiency(LabelingFunction):
-    
+
     def apply_instance(self, instance):
         labels = ['ABS'] * len(instance['tokens'])
-        
+
         # "___ deficiency"
         for i in range(len(instance['tokens']) - 1):
             if instance['tokens'][i].dep_ == 'compound' and                     instance['tokens'][i+1].lemma_ == 'deficiency':
                 labels[i] = 'I'
                 labels[i+1] = 'I'
-                
+
                 # Adds any other compound tokens before the phrase
                 for j in range(i - 1, -1, -1):
                     if instance['tokens'][j].dep_ == 'compound':
                         labels[j] = 'I'
                     else:
                         break
-        
+
         # "deficiency of ___"
         for i in range(len(instance['tokens']) - 2):
             if instance['tokens'][i].lemma_ == 'deficiency' and                     instance['tokens'][i+1].lemma_ == 'of':
@@ -168,27 +132,24 @@ class Deficiency(LabelingFunction):
                             nnp_active = True
                     elif nnp_active:
                         break
-                    labels[j] = 'I' 
-        
+                    labels[j] = 'I'
+
         return labels
-    
+
 lf = Deficiency()
 lf.apply(ncbi_docs)
 
 
-# In[12]:
-
-
 class Disorder(LabelingFunction):
-    
+
     def apply_instance(self, instance):
         labels = ['ABS'] * len(instance['tokens'])
-        
+
         for i in range(len(instance['tokens']) - 1):
             if instance['tokens'][i].dep_ == 'compound' and                     instance['tokens'][i+1].lemma_ == 'disorder':
                 labels[i] = 'I'
                 labels[i+1] = 'I'
-                
+
                 # Adds any other compound tokens before the phrase
                 for j in range(i - 1, -1, -1):
                     if instance['tokens'][j].dep_ == 'compound':
@@ -197,24 +158,21 @@ class Disorder(LabelingFunction):
                         break
 
         return labels
-    
+
 lf = Disorder()
 lf.apply(ncbi_docs)
 
 
-# In[13]:
-
-
 class Lesion(LabelingFunction):
-    
+
     def apply_instance(self, instance):
         labels = ['ABS'] * len(instance['tokens'])
-        
+
         for i in range(len(instance['tokens'])-1):
             if instance['tokens'][i].dep_ == 'compound' and                    instance['tokens'][i+1].lemma_ == 'lesion':
                 labels[i] = 'I'
                 labels[i+1] = 'I'
-                
+
                 # Adds any other compound tokens before the phrase
                 for j in range(i - 1, -1, -1):
                     if instance['tokens'][j].dep_ == 'compound':
@@ -223,24 +181,21 @@ class Lesion(LabelingFunction):
                         break
 
         return labels
-    
+
 lf = Lesion()
 lf.apply(ncbi_docs)
 
 
-# In[14]:
-
-
 class Syndrome(LabelingFunction):
-    
+
     def apply_instance(self, instance):
         labels = ['ABS'] * len(instance['tokens'])
-        
+
         for i in range(len(instance['tokens'])-1):
             if instance['tokens'][i].dep_ == 'compound' and                    instance['tokens'][i+1].lemma_ == 'syndrome':
                 labels[i] = 'I'
                 labels[i+1] = 'I'
-                
+
                 # Adds any other compound tokens before the phrase
                 for j in range(i - 1, -1, -1):
                     if instance['tokens'][j].dep_ == 'compound':
@@ -249,12 +204,9 @@ class Syndrome(LabelingFunction):
                         break
 
         return labels
-    
+
 lf = Syndrome()
 lf.apply(ncbi_docs)
-
-
-# In[15]:
 
 
 from wiser.lf import UMLSMatcher
@@ -275,7 +227,7 @@ def apply_umls(docs, semantic_type, positive=True, i_label='I', o_label='O'):
         semantic_type, umls_home, types,
         additional_stop_words=additional_stop_words, i_label=label)
     lf.apply(docs)
-    
+
     for doc in docs:
         for i, token in enumerate(doc['tokens']):
             if len(token.text) <= 3:
@@ -294,13 +246,13 @@ def apply_umls(docs, semantic_type, positive=True, i_label='I', o_label='O'):
         for i, token in enumerate(doc['tokens']):
             if token.text in acronyms:
                 doc['WISER_LABELS'][semantic_type][i] = i_label
-                
+
 apply_umls(ncbi_docs, 'Body Part, Organ, or Organ Component', i_label='I', positive=False)
 class BodyTerms(LabelingFunction):
     def apply_instance(self, instance):
         tokens = [token.text.lower() for token in instance['tokens']]
         labels = ['ABS'] * len(tokens)
-        
+
         terms = set([
             "cancer", "cancers",
             "damage", "degeneration",
@@ -308,7 +260,7 @@ class BodyTerms(LabelingFunction):
             "pain",
             "injury", "injuries",
         ])
-        
+
         for i in range(0, len(tokens)-1):
             if instance['WISER_LABELS']['Body Part, Organ, or Organ Component'][i] == 'O':
                 if tokens[i+1] in terms:
@@ -323,14 +275,11 @@ for doc in ncbi_docs:
     del doc['WISER_LABELS']['Body Part, Organ, or Organ Component']
 
 
-# In[16]:
-
-
 class OtherPOS(LabelingFunction):
     other_pos = {"ADP", "ADV", "DET", "VERB"}
     def apply_instance(self, instance):
         labels = ['ABS'] * len(instance['tokens'])
-        
+
         for i in range(0, len(instance['tokens'])):
             if instance['tokens'][i].pos_ in self.other_pos:
                 labels[i] = "O"
@@ -338,9 +287,6 @@ class OtherPOS(LabelingFunction):
 
 lf = OtherPOS()
 lf.apply(ncbi_docs)
-
-
-# In[17]:
 
 
 stop_words = {"a", "as", "be", "but", "do", "even",
@@ -351,42 +297,36 @@ stop_words = {"a", "as", "be", "but", "do", "even",
               "what", "which", "who", "with"}
 
 class StopWords(LabelingFunction):
-    
+
     def apply_instance(self, instance):
         labels = ['ABS'] * len(instance['tokens'])
-        
+
         for i in range(len(instance['tokens'])):
             if instance['tokens'][i].lemma_ in stop_words:
                 labels[i] = 'O'
         return labels
-    
+
 lf = StopWords()
 lf.apply(ncbi_docs)
 
 
-# In[18]:
-
-
 class Punctuation(LabelingFunction):
-    
+
     other_punc = {".", ",", "?", "!", ";", ":", "(", ")",
                   "%", "<", ">", "=", "+", "/", "\\"}
     def apply_instance(self, instance):
         labels = ['ABS'] * len(instance['tokens'])
-        
+
         for i in range(len(instance['tokens'])):
             if instance['tokens'][i].text in self.other_punc:
                 labels[i] = 'O'
         return labels
-    
+
 lf = Punctuation()
 lf.apply(ncbi_docs)
 
 
-# ## Applies Linking Functions
-
-# In[19]:
-
+# Applies Linking Functions
 
 class PossessivePhrase(LinkingFunction):
     def apply_instance(self, instance):
@@ -394,14 +334,11 @@ class PossessivePhrase(LinkingFunction):
         for i in range(1, len(instance['tokens'])):
             if instance['tokens'][i-1].text == "'s" or instance['tokens'][i].text == "'s":
                 links[i] = 1
-        
+
         return links
 
 lf = PossessivePhrase()
 lf.apply(ncbi_docs)
-
-
-# In[20]:
 
 
 class HyphenatedPhrase(LinkingFunction):
@@ -410,30 +347,24 @@ class HyphenatedPhrase(LinkingFunction):
         for i in range(1, len(instance['tokens'])):
             if instance['tokens'][i-1].text == "-" or instance['tokens'][i].text == "-":
                 links[i] = 1
-        
+
         return links
 
 lf = HyphenatedPhrase()
 lf.apply(ncbi_docs)
 
 
-# In[21]:
+from wiser.lf import ElmoLinkingFunction
 
-
-# from wiser.lf import ElmoLinkingFunction
-
-# lf = ElmoLinkingFunction(.8)
-# lf.apply(ncbi_docs)
-
-
-# In[22]:
+lf = ElmoLinkingFunction(.8)
+lf.apply(ncbi_docs)
 
 
 class CommonBigram(LinkingFunction):
     def apply_instance(self, instance):
         links = [0] * len(instance['tokens'])
         tokens = [token.text.lower() for token in instance['tokens']]
-        
+
         bigrams = {}
         for i in range(1, len(tokens)):
             bigram = tokens[i-1], tokens[i]
@@ -441,26 +372,23 @@ class CommonBigram(LinkingFunction):
                 bigrams[bigram] += 1
             else:
                 bigrams[bigram] = 1
-        
+
         for i in range(1, len(tokens)):
             bigram = tokens[i-1], tokens[i]
             count = bigrams[bigram]
             if count >= 6:
                 links[i] = 1
-        
+
         return links
 
 lf = CommonBigram()
 lf.apply(ncbi_docs)
 
 
-# In[23]:
-
-
 class ExtractedPhrase(LinkingFunction):
     def __init__(self, terms):
         self.term_dict = {}
-        
+
         for term in terms:
             term = [token.lower() for token in term]
             if term[0] not in self.term_dict:
@@ -472,12 +400,12 @@ class ExtractedPhrase(LinkingFunction):
             to_sort = self.term_dict[first_token]
             self.term_dict[first_token] = sorted(
                 to_sort, reverse=True, key=lambda x: len(x))
-    
-    
+
+
     def apply_instance(self, instance):
         tokens = [token.text.lower() for token in instance['tokens']]
         links = [0] * len(instance['tokens'])
-        
+
         i = 0
         while i < len(tokens):
             if tokens[i] in self.term_dict:
@@ -499,22 +427,17 @@ class ExtractedPhrase(LinkingFunction):
                             i = i + len(c) - 1
                             break
             i += 1
-        
+
         return links
 
 lf = ExtractedPhrase(dict_full)
 lf.apply(ncbi_docs)
 
 
-# ## Trains, Evaluates, and Saves Generative Models to Disk
-
-# In[30]:
-
-
-from wiser.eval import score_labeling_functions
+# Trains, Evaluates, and Saves Generative Models to Disk
 
 print(score_labels_majority_vote(test_data, span_level=True))
-print('')
+print('--------------------')
 
 save_label_distribution('output/dev_data.p', dev_data)
 save_label_distribution('output/test_data.p', test_data)
@@ -529,9 +452,6 @@ save_label_distribution('output/train_data_unweighted.p', train_data, dist)
 epochs = 5
 
 
-# In[32]:
-
-
 """ Naive Bayes Model"""
 # Defines the model
 gen_label_to_ix, disc_label_to_ix = get_label_to_ix(train_data)
@@ -543,14 +463,12 @@ p, r, f1 = train_generative_model(nb, train_data, dev_data, epochs, gen_label_to
 
 # Evaluates the model
 print('Naive Bayes: \n' + str(evaluate_generative_model(model=nb, data=test_data, label_to_ix=gen_label_to_ix)))
+print('--------------------')
 
 # Saves the model
 label_votes, link_votes, seq_starts = get_generative_model_inputs(train_data, gen_label_to_ix)
 p_unary = nb.get_label_distribution(label_votes)
 save_label_distribution('output/train_data_nb.p', train_data, p_unary, None, gen_label_to_ix, disc_label_to_ix)
-
-
-# In[33]:
 
 
 """ HMM Model"""
@@ -564,6 +482,7 @@ p, r, f1 = train_generative_model(hmm, train_data, dev_data, epochs, label_to_ix
 
 # Evaluates the model
 print('HMM: \n' + str(evaluate_generative_model(model=hmm, data=test_data, label_to_ix=gen_label_to_ix)))
+print('--------------------')
 
 # Saves the model
 label_votes, link_votes, seq_starts = get_generative_model_inputs(train_data, gen_label_to_ix)
@@ -571,14 +490,11 @@ p_unary, p_pairwise = hmm.get_label_distribution(label_votes, seq_starts)
 save_label_distribution('output/train_data_hmm.p', train_data, p_unary, p_pairwise, gen_label_to_ix, disc_label_to_ix)
 
 
-# In[34]:
-
-
 """ Linked HMM Model """
 # Defines the model
 gen_label_to_ix, disc_label_to_ix = get_label_to_ix(train_data)
 tagging_rules, linking_rules = get_rules(train_data)
-link_hmm = LinkedHMM(num_classes=len(gen_label_to_ix)-1, num_labeling_funcs=len(tagging_rules), 
+link_hmm = LinkedHMM(num_classes=len(gen_label_to_ix)-1, num_labeling_funcs=len(tagging_rules),
                 num_linking_funcs=len(linking_rules), init_acc=0.9, acc_prior=50, balance_prior=500)
 
 # Trains the model
@@ -591,4 +507,3 @@ print('Linked HMM: \n' + str(evaluate_generative_model(model=link_hmm, data=test
 inputs = get_generative_model_inputs(train_data, gen_label_to_ix)
 p_unary, p_pairwise = link_hmm.get_label_distribution(*inputs)
 save_label_distribution('output/train_data_link_hmm.p', train_data, p_unary, p_pairwise, gen_label_to_ix, disc_label_to_ix)
-

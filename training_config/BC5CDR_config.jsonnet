@@ -70,7 +70,8 @@
           "alpha": 0.1
         }
       ]
-    ]
+    ],
+    "use_tags": std.extVar("USE_TAGS")
   },
   "iterator": {
     "type": "basic",

@@ -1,0 +1,94 @@
+{
+    "dataset_reader": {
+        "type": "weak_label",
+        "split_sentences": true,
+        "token_indexers": {
+            "bert": {
+                "type": "bert-pretrained",
+                "do_lowercase": true,
+                "pretrained_model": "data/scibert_scivocab_uncased/vocab.txt",
+                "truncate_long_sequences": false,
+                "use_starting_offsets": true
+            },
+            "token_characters": {
+                "type": "characters",
+                "min_padding_length": 3
+            }
+        }
+    },
+    "iterator": {
+        "type": "basic",
+        "batch_size": 64
+    },
+    "model": {
+        "type": "wiser_crf_tagger",
+        "dropout": 0.1,
+        "encoder": {
+            "type": "lstm",
+            "bidirectional": true,
+            "dropout": 0.1,
+            "hidden_size": 200,
+            "input_size": 896,
+            "num_layers": 2
+        },
+        "include_start_end_transitions": true,
+        "label_encoding": "IOB1",
+        "regularizer": [
+            [
+                "scalar_parameters",
+                {
+                    "alpha": 0.1,
+                    "type": "l2"
+                }
+            ]
+        ],
+        "text_field_embedder": {
+            "allow_unmatched_keys": true,
+            "embedder_to_indexer_map": {
+                "bert": [
+                    "bert",
+                    "bert-offsets"
+                ],
+                "token_characters": [
+                    "token_characters"
+                ]
+            },
+            "token_embedders": {
+                "bert": {
+                    "type": "bert-pretrained",
+                    "pretrained_model": "data/scibert_scivocab_uncased/weights.tar.gz"
+                },
+                "token_characters": {
+                    "type": "character_encoding",
+                    "embedding": {
+                        "embedding_dim": 16
+                    },
+                    "encoder": {
+                        "type": "cnn",
+                        "conv_layer_activation": "relu",
+                        "embedding_dim": 16,
+                        "ngram_filter_sizes": [
+                            3
+                        ],
+                        "num_filters": 128
+                    }
+                }
+            }
+        },
+        "use_tags": "True"
+    },
+    "train_data_path": "BC5CDR/output/train_data_nb.p",
+    "validation_data_path": "BC5CDR/output/dev_data.p",
+    "trainer": {
+        "cuda_device": "-1",
+        "grad_norm": 5,
+        "num_epochs": 75,
+        "num_serialized_models_to_keep": 3,
+        "optimizer": {
+            "type": "adam",
+            "lr": 0.001
+        },
+        "patience": 25,
+        "validation_metric": "+f1-measure-overall"
+    }
+}
