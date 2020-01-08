@@ -1,5 +1,0 @@
-O
-I-Chemical
-I-Disease
-B-Chemical
-B-Disease

@@ -6,11 +6,10 @@
   "pytorch_seed": std.extVar("RANDOM_SEED"),
   "dataset_reader": {
     "type": "weak_label",
-    "split_sentences": true,
     "token_indexers": {
       "bert": {
         "type": "bert-pretrained",
-        "pretrained_model": "data/scibert_scivocab_uncased/vocab.txt",
+        "pretrained_model": "../data/scibert_scivocab_uncased/vocab.txt",
         "do_lowercase": true,
         "use_starting_offsets": true,
         "truncate_long_sequences": false
@@ -23,10 +22,12 @@
   },
   "train_data_path": std.extVar("TRAIN_PATH"),
   "validation_data_path":  std.extVar("DEV_PATH"),
+  "test_data_path": std.extVar("TEST_PATH"),
+  "evaluate_on_test": true,
   "model": {
     "type": "wiser_crf_tagger",
     "label_encoding": "IOB1",
-    "dropout": 0.1,
+    "dropout": 0.5,
     "include_start_end_transitions": true,
     "text_field_embedder": {
       "allow_unmatched_keys": true,
@@ -37,7 +38,7 @@
       "token_embedders": {
         "bert": {
           "type": "bert-pretrained",
-          "pretrained_model": "data/scibert_scivocab_uncased/weights.tar.gz",
+          "pretrained_model": "../data/scibert_scivocab_uncased/weights.tar.gz"
         },
         "token_characters": {
             "type": "character_encoding",
@@ -59,7 +60,7 @@
       "input_size": 768 + 128,
       "hidden_size": 200,
       "num_layers": 2,
-      "dropout": 0.1,
+      "dropout": 0.5,
       "bidirectional": true
     },
     "regularizer": [
@@ -75,7 +76,7 @@
   },
   "iterator": {
     "type": "basic",
-    "batch_size": 64
+    "batch_size": 8
   },
   "trainer": {
     "optimizer": {
@@ -87,6 +88,6 @@
     "num_epochs": 75,
     "grad_norm": 5.0,
     "patience": 25,
-    "cuda_device":  std.extVar("CUDA_DEVICE")
+    "cuda_device": std.extVar("CUDA_DEVICE")
   }
 }

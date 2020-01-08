@@ -1,4 +1,4 @@
-# Weakly Supervised Sequence Tagging from Noisy Rules
+# Weakly Supervised Sequence Tagging from Noisy Rules - Reproducibility Code
 
 ## Getting Started
 
@@ -8,19 +8,19 @@ These instructions will get you a copy of our experiments up and running on your
 
 Please clone and download [wiser](https://github.com/BatsResearch/wiser), our framework for training weakly supervising deep sequence taggers for named entity recognition tasks.
 
-To get the code for generative models and other rule-aggregation methods, download the latest version of [ner-sandbox](https://https://github.com/BatsResearch/ner-sandbox).
+To get the code for generative models and other rule-aggregation methods, please download the latest version of [ner-sandbox](https://https://github.com/BatsResearch/ner-sandbox).
 
 ### Installing
 
 To download the dependencies required to run our experiments, run
 
 ```
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
 
-Then, install SpaCy's  dictionary by running
+Then, install SpaCy's small English dictionary by running
 '''
-python3 -m spacy download en_core_web_sm
+python -m spacy download en_core_web_sm
 '''
 
 ## Contributing
