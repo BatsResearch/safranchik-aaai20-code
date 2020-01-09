@@ -24,20 +24,20 @@ Then, install SpaCy's small English model by running
 python -m spacy download en_core_web_sm
 ```
 
-Then, in your virtual enviornment, please run the *labelmodels/setup.py* and *wiser/setup.py* scripts to install the corresponding dependencies.
+In your virtual enviornment, please run the *labelmodels/setup.py* and *wiser/setup.py* scripts to install the corresponding dependencies.
 ```
 python setup.py install
 ```
 
 ## Datasets
 
-Our experiments depend on *six* different datasets that you will need to separately download. Please add all dataset directories to *safranchik-aaai20-code/data* directory.
+Our experiments depend on *six* different datasets that you will need to download separately.
 
 * BC5CDR:
 
-* [NCBI Disease](https://www.ncbi.nlm.nih.gov/CBBresearch/Dogan/DISEASE/): Download and install the complete training, development, and testing sets, and place them in a folder *data/NCBI*.
+* [NCBI Disease](https://www.ncbi.nlm.nih.gov/CBBresearch/Dogan/DISEASE/): Download and install the complete training, development, and testing sets. Place the three separate files inside *data/NCBI*.
 
-* LaptopReview:
+* [LaptopReview](http://alt.qcri.org/semeval2014/task4/index.php?id=data-and-tools): Download the train data V2.0 for the Laptops and Restaurants dataset, and place the *Laptop_Train_v2.xml* file inside *data/LaptopReview*. Then, download the test data - phase B, and place the *Laptops_Test_Data_phaseB.xml* file inside the same directory.
 
 * [CoNLL v5](https://catalog.ldc.upenn.edu/LDC2013T19): Download and compile the English dataset version 5.0 , and place it in the folder *data/conll-formatted-ontonotes-5.0*.
 
