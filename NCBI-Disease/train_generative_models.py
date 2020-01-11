@@ -226,66 +226,12 @@ lf = Syndrome()
 lf.apply(ncbi_docs)
 
 
-umls_home = '../data/2018AB'
-
-
-def apply_umls(docs, semantic_type, positive=True, i_label='I', o_label='O'):
-    types = set([semantic_type])
-    additional_stop_words = set(["analgesic",
-                                 "anesthesia",
-                                 "anesthetic",
-                                 "anterior",
-                                 "antibiotic",
-                                 "battery",
-                                 "brain",
-                                 "capillary",
-                                 "cortex",
-                                 "face",
-                                 "grip",
-                                 "group",
-                                 "illness",
-                                 "injury",
-                                 "medulla",
-                                 "nervous",
-                                 "nose",
-                                 "posterior",
-                                 "liver",
-                                 "secondary",
-                                 "suffer",
-                                 "symptom",
-                                 "toxic",
-                                 "toxic effect"])
-    label = i_label if positive else o_label
-    lf = UMLSMatcher(
-        semantic_type, umls_home, types,
-        additional_stop_words=additional_stop_words, i_label=label)
-    lf.apply(docs)
-
-    for doc in docs:
-        for i, token in enumerate(doc['tokens']):
-            if len(token.text) <= 3:
-                doc['WISER_LABELS'][semantic_type][i] = 'ABS'
-
-        acronyms = set()
-        active = False
-        for i, label in enumerate(doc['WISER_LABELS'][semantic_type]):
-            if label[0] == i_label:
-                active = True
-            elif active and doc['tokens'][i].text == '(' and doc['tokens'][i + 2].pos_ == "PUNCT":
-                acronyms.add(doc['tokens'][i + 1].text)
-                active = False
-            else:
-                active = False
-        for i, token in enumerate(doc['tokens']):
-            if token.text in acronyms:
-                doc['WISER_LABELS'][semantic_type][i] = i_label
-
-
-apply_umls(
-    ncbi_docs,
-    'Body Part, Organ, or Organ Component',
-    i_label='I',
-    positive=False)
+terms = []
+with open('../data/umls/umls_body_part.txt', 'r') as f:
+    for line in f.readlines():
+        terms.append(line.strip().split(" "))
+lf = DictionaryMatcher("TEMP", terms, i_label='TEMP', uncased=True, match_lemmas=True)
+lf.apply(ncbi_docs)
 
 
 class BodyTerms(TaggingRule):
@@ -295,14 +241,14 @@ class BodyTerms(TaggingRule):
 
         terms = set([
             "cancer", "cancers",
-            "damage", "degeneration",
-            "disease", "diseases", "dystrophy",
-            "pain",
+            "damage",
+            "disease", "diseases"
+                       "pain",
             "injury", "injuries",
         ])
 
         for i in range(0, len(tokens) - 1):
-            if instance['WISER_LABELS']['Body Part, Organ, or Organ Component'][i] == 'O':
+            if instance['WISER_LABELS']['TEMP'][i] == 'TEMP':
                 if tokens[i + 1] in terms:
                     labels[i] = "I"
                     labels[i + 1] = "I"
@@ -313,7 +259,7 @@ lf = BodyTerms()
 lf.apply(ncbi_docs)
 
 for doc in ncbi_docs:
-    del doc['WISER_LABELS']['Body Part, Organ, or Organ Component']
+    del doc['WISER_LABELS']['TEMP']
 
 
 class OtherPOS(TaggingRule):
