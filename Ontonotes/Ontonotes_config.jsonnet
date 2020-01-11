@@ -1,5 +1,6 @@
-// Configuration for the CONLL model from AllenAI, modified slightly
-// and switched to BERT features
+// Configuration adapted from https://gist.github.com/joelgrus/7cdb8fb2d81483a8d9ca121d9c617514
+// for BERT embeddings CRF tagger
+// Changed settings to use those specified in EBM-NLP paper
 {
   "random_seed": std.extVar("RANDOM_SEED"),
   "pytorch_seed": std.extVar("RANDOM_SEED"),
@@ -63,17 +64,9 @@
         "dropout": 0.5,
         "bidirectional": true
     },
-    "regularizer": [
-    [
-        "scalar_parameters",
-        {
-          "type": "l2",
-          "alpha": 0.1
-        }
-      ]
-    ],
     "use_tags": std.extVar("USE_TAGS")
   },
+
   "iterator": {
     "type": "basic",
     "batch_size": 8

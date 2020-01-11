@@ -8,12 +8,13 @@ from wiser.generative import evaluate_generative_model
 from wiser.data import save_label_distribution
 from wiser.lf import ElmoLinkingRule
 from wiser.eval import *
+from collections import Counter
 
 
 root = "../data/"
 reader = LaptopsDatasetReader()
 train_data = reader.read(root + 'LaptopReview/Laptop_Train_v2.xml')
-test_data = reader.read(root + 'LaptopReview/Laptops_Test_Gold.xml')
+test_data = reader.read(root + 'LaptopReview/Laptops_Test_Data_phaseB.xml')
 
 
 laptops_docs = train_data + test_data
@@ -338,7 +339,15 @@ print('--------------------')
 save_label_distribution('output/generative/dev_data.p', dev_data)
 save_label_distribution('output/generative/test_data.p', test_data)
 
-gen_label_to_ix, disc_label_to_ix = get_label_to_ix(train_data + dev_data)
+
+cnt = Counter()
+for instance in train_data + dev_data:
+    for tag in instance['tags']:
+        cnt[tag] += 1
+
+disc_label_to_ix = {value[0]: ix for ix, value in enumerate(cnt.most_common())}
+
+gen_label_to_ix = {'ABS': 0, 'I': 1, 'O': 2}
 
 dist = get_mv_label_distribution(train_data, disc_label_to_ix, 'O')
 save_label_distribution('output/generative/train_data_mv.p', train_data, dist)

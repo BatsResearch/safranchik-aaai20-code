@@ -7,6 +7,7 @@ from labelmodels import LearningConfig
 from wiser.generative import evaluate_generative_model
 from wiser.data import save_label_distribution
 from wiser.eval import *
+from collections import Counter
 
 cdr_reader = CDRCombinedDatasetReader()
 train_data = cdr_reader.read('../data/BC5CDR/CDR_TrainingSet.BioC.xml')
@@ -22,7 +23,7 @@ dict_core_chem_exact = set()
 dict_core_dis = set()
 dict_core_dis_exact = set()
 
-with open('../data/autoner_dicts/BC5CDR/dict_core.txt') as f:
+with open('../data/AutoNER_dicts/BC5CDR/dict_core.txt') as f:
     for line in f.readlines():
         line = line.strip().split(None, 1)
         entity_type = line[0]
@@ -691,7 +692,15 @@ print('--------------------')
 save_label_distribution('output/generative/dev_data.p', dev_data)
 save_label_distribution('output/generative/test_data.p', test_data)
 
-gen_label_to_ix, disc_label_to_ix = get_label_to_ix(train_data)
+
+cnt = Counter()
+for instance in train_data + dev_data:
+    for tag in instance['tags']:
+        cnt[tag] += 1
+
+disc_label_to_ix = {value[0]: ix for ix, value in enumerate(cnt.most_common())}
+gen_label_to_ix = {'ABS': 0, 'I-Chemical': 1, 'I-Disease': 2, 'O': 3}
+
 
 dist = get_mv_label_distribution(train_data, disc_label_to_ix, 'O')
 save_label_distribution('output/generative/train_data_mv.p', train_data, dist)

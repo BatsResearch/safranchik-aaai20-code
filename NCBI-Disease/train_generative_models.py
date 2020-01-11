@@ -8,6 +8,7 @@ from wiser.generative import evaluate_generative_model
 from wiser.data import save_label_distribution
 from wiser.eval import *
 from wiser.lf import ElmoLinkingRule
+from collections import Counter
 
 root = "../../data/"
 reader = NCBIDiseaseDatasetReader()
@@ -21,7 +22,7 @@ ncbi_docs = train_data + dev_data + test_data
 
 dict_core = set()
 dict_core_exact = set()
-with open('../data/autoner_dicts/NCBI/dict_core.txt') as f:
+with open('../data/AutoNER_dicts/NCBI/dict_core.txt') as f:
     for line in f.readlines():
         line = line.strip().split()
         term = tuple(line[1:])
@@ -488,7 +489,13 @@ print('--------------------')
 save_label_distribution('output/generative/dev_data.p', dev_data)
 save_label_distribution('output/generative/test_data.p', test_data)
 
-gen_label_to_ix, disc_label_to_ix = get_label_to_ix(train_data)
+cnt = Counter()
+for instance in train_data + dev_data:
+    for tag in instance['tags']:
+        cnt[tag] += 1
+
+disc_label_to_ix = {value[0]: ix for ix, value in enumerate(cnt.most_common())}
+gen_label_to_ix = {'ABS': 0, 'I': 1, 'O': 2}
 
 dist = get_mv_label_distribution(train_data, disc_label_to_ix, 'O')
 save_label_distribution('output/generative/train_data_mv.p', train_data, dist)

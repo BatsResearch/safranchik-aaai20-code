@@ -36,7 +36,7 @@ for iteration in range(num_iterations):
 
     train_discriminative_model(
         train_data_path=train_file,
-        dev_data_path=dev_file,
+        dev_data_path=train_file,
         test_data_path=test_file,
         train_config_path=config_path,
         output_path=output_path,

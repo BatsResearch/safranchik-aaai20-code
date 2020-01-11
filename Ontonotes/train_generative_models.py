@@ -15,7 +15,6 @@ from util import *
 import numpy as np
 root_directory = '../'
 
-
 reader = SrlReaderIOB1(used_tags={'I-ARG0', 'I-ARG1', 'I-ARGM-NEG', 'O'})
 train_data = reader.read('../data/conll-formatted-ontonotes-5.0/data/train')
 dev_data = reader.read(
@@ -399,7 +398,14 @@ print('--------------------')
 save_label_distribution('output/generative/dev_data.p', reduced_dev)
 save_label_distribution('output/generative/test_data.p', reduced_test)
 
-gen_label_to_ix, disc_label_to_ix = get_label_to_ix(train_data)
+cnt = Counter()
+for instance in ontonotes_docs:
+    for tag in instance['tags']:
+        cnt[tag] += 1
+
+disc_label_to_ix = {value[0]: ix for ix, value in enumerate(cnt.most_common())}
+gen_label_to_ix = {'ABS': 0, 'O': 1, 'I-ARG1': 2, 'I-ARG0': 3, 'I-ARGM-NEG': 4}
+
 
 dist = get_mv_label_distribution(train_data, disc_label_to_ix, 'O')
 save_label_distribution('output/generative/train_data_mv.p', train_data, dist)
@@ -418,13 +424,15 @@ tagging_rules, linking_rules = get_rules(train_data)
 nb = NaiveBayes(
     len(gen_label_to_ix) - 1,
     len(tagging_rules),
-    init_acc=0.7,
-    acc_prior=0.5,
-    balance_prior=1.0)
+    init_acc=0.9,
+    acc_prior=50,
+    balance_prior=10)
 
 # Trains the model
+config = LearningConfig()
+config.batch_size = 16
 p, r, f1 = train_generative_model(
-    nb, train_data, dev_data, epochs, gen_label_to_ix, LearningConfig())
+    nb, train_data, dev_data, epochs, gen_label_to_ix, config)
 
 # Evaluates the model
 print('Naive Bayes: \n' + str(evaluate_generative_model(model=nb,
@@ -433,8 +441,8 @@ print('--------------------')
 
 
 # Saves the model
-label_votes, link_votes, seq_starts = get_generative_model_inputs(
-    train_data, gen_label_to_ix)
+label_votes, link_votes, seq_starts = get_generative_model_inputs(train_data, gen_label_to_ix)
+
 p_unary = nb.get_label_distribution(label_votes)
 save_label_distribution(
     'output/generative/train_data_nb.p',
@@ -456,8 +464,10 @@ hmm = HMM(
     balance_prior=500)
 
 # Trains the model
+config = LearningConfig()
+config.batch_size = 16
 p, r, f1 = train_generative_model(
-    hmm, train_data, dev_data, epochs, label_to_ix=gen_label_to_ix, config=LearningConfig())
+    hmm, train_data, dev_data, epochs, gen_label_to_ix, config)
 
 # Evaluates the model
 print('HMM: \n' + str(evaluate_generative_model(model=hmm,
@@ -485,13 +495,15 @@ link_hmm = LinkedHMM(
     num_classes=len(gen_label_to_ix) - 1,
     num_labeling_funcs=len(tagging_rules),
     num_linking_funcs=len(linking_rules),
-    init_acc=0.9,
-    acc_prior=100,
-    balance_prior=500)
+    init_acc=0.7,
+    acc_prior=50,
+    balance_prior=100)
 
 # Trains the model
+config = LearningConfig()
+config.batch_size = 16
 p, r, f1 = train_generative_model(
-    link_hmm, train_data, dev_data, epochs, label_to_ix=gen_label_to_ix, config=LearningConfig())
+    link_hmm, train_data, dev_data, epochs=1, label_to_ix=gen_label_to_ix, config=config)
 
 # Evaluates the model
 print('Linked HMM: \n' + str(evaluate_generative_model(model=link_hmm,
@@ -503,7 +515,7 @@ print('--------------------')
 inputs = get_generative_model_inputs(train_data, gen_label_to_ix)
 p_unary, p_pairwise = link_hmm.get_label_distribution(*inputs)
 save_label_distribution(
-    'output/generative/train_data_link_hmm.p',
+    'output/generative/train_data_link_hmm_1.p',
     train_data,
     p_unary,
     p_pairwise,
