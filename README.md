@@ -12,7 +12,12 @@ To get the code for generative models and other rule-aggregation methods, please
 
 ### Installing
 
-To download the otdependencies required to run our experiments, run
+In your virtual enviornment, please run the *labelmodels/setup.py* and *wiser/setup.py* scripts to install the corresponding dependencies.
+```
+python setup.py install
+```
+
+To install other dependencies required to run our experiments, run
 
 ```
 pip install -r requirements.txt
@@ -24,16 +29,11 @@ Then, install SpaCy's small English model by running
 python -m spacy download en_core_web_sm
 ```
 
-In your virtual enviornment, please run the *labelmodels/setup.py* and *wiser/setup.py* scripts to install the corresponding dependencies.
-```
-python setup.py install
-```
-
 ## Datasets
 
 Our experiments depend on *six* different datasets that you will need to download separately.
 
-* BC5CDR:
+* [BC5CDR](https://www.ncbi.nlm.nih.gov/research/bionlp/Data/): Download and install the train, development, and test BioCreative V CDR corpus data files. Place the three separate files inside *data/BC5CD*. 
 
 * [NCBI Disease](https://www.ncbi.nlm.nih.gov/CBBresearch/Dogan/DISEASE/): Download and install the complete training, development, and testing sets. Place the three separate files inside *data/NCBI*.
 
@@ -43,10 +43,10 @@ Our experiments depend on *six* different datasets that you will need to downloa
 
 * [Scibert](https://github.com/allenai/scibert): Download the scibert-scivocab-uncased version of the Scibert embeddings, and place the files *weights.tar.gz and *vocab.txt* inside *data/scibert_scibocab_uncased*.
 
-* [UMLS](https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html): Download the 2018AB version of knwoeldge sources, and place them a folder called *data/2018AB*. Then, extract the *umls_antibiotic.txt*, *umls_body_part.txt*, *umls_disease_or_syndrome.txt*, *umls_element_ion_or_isotope.txt*, and *umls_organic_chemical.txt* files and place them in *data/umls*.
+* [UMLS](https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html). The UMLS dictionaries have been extracted from the UMLS 2018AB dataset. They are distributed according to the License Agreement for Use of the UMLS® Metathesaurus®.
 
-* [AutoNER Dictionaries](). Please download the *dict_core.txt* and *dict_full.txt* files for the BC5CDR, NCBI-Disease, and LaptopReview dataset. Then, place them into the folders *data/AutoNER_dicts/BC5CDR*, *data/AutoNER_dicts/NCBI-Disease*, and *data/AutoNER_dicts/LaptopReview* respectively.
-
+* [AutoNER Dictionaries](https://github.com/shangjingbo1226/AutoNER). The AutoNER dictionaries for the BC5CDR, LaptopReview, and NCBI datasets have been generously provided by Jingbo Shang et al. They have been sourced from the  EMNLP 2018 paper
+"Learning Named Entity Tagger using Domain-Specific Dictionary".
 
 ## Authors
 
