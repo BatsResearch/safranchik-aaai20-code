@@ -48,8 +48,15 @@ Our experiments depend on *six* different datasets that you will need to downloa
 * [AutoNER Dictionaries](https://github.com/shangjingbo1226/AutoNER). The AutoNER dictionaries for the BC5CDR, LaptopReview, and NCBI datasets have been generously provided by Jingbo Shang et al. They have been sourced from the  EMNLP 2018 paper
 "Learning Named Entity Tagger using Domain-Specific Dictionary".
 
-## Authors
+## Citation
 
-* **Esteban Safranchik**
-* **Shiying Luo**
-* **Stephen H. Bach**
+Safranchik Esteban, Shiying Luo, Stephen H. Bach. "Weakly Supervised Sequence Tagging From Noisy Rules". In 34th AAAI Conference on Artificial Intelligence, 2020.
+
+```
+@inproceedings{safranchik2020weakly,
+  title = {Weakly Supervised Sequence Tagging From Noisy Rules}, 
+  author = {Safranchik, Esteban and Luo, Shiying and Bach, Stephen H.}, 
+  booktitle = {AAAI}, 
+  year = 2020, 
+}
+```
