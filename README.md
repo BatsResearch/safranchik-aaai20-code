@@ -4,29 +4,13 @@
 
 These instructions will get you a copy of our experiments up and running on your local machine for development and testing purposes.
 
-### Prerequisites
-
-Please clone and download [wiser](https://github.com/BatsResearch/wiser), our framework for training weakly supervising deep sequence taggers for named entity recognition tasks.
-
-To get the code for generative models and other rule-aggregation methods, please download the latest version of [labelmodels](https://https://github.com/BatsResearch/labelmodels), our lightweight implementation of generative label models for weakly supervised machine learning.
 
 ### Installing
 
-To download the otdependencies required to run our experiments, run
+In your virtual environment, please install the required dependencies using
 
 ```
 pip install -r requirements.txt
-```
-
-Then, install SpaCy's small English model by running
-
-```
-python -m spacy download en_core_web_sm
-```
-
-In your virtual enviornment, please run the *labelmodels/setup.py* and *wiser/setup.py* scripts to install the corresponding dependencies.
-```
-python setup.py install
 ```
 
 ## Datasets
@@ -48,8 +32,17 @@ Our experiments depend on *six* different datasets that you will need to downloa
 * [AutoNER Dictionaries](). Please download the *dict_core.txt* and *dict_full.txt* files for the BC5CDR, NCBI-Disease, and LaptopReview dataset. Then, place them into the folders *data/AutoNER_dicts/BC5CDR*, *data/AutoNER_dicts/NCBI-Disease*, and *data/AutoNER_dicts/LaptopReview* respectively.
 
 
-## Authors
+## Citation
 
-* **Esteban Safranchik**
-* **Shiying Luo**
-* **Stephen H. Bach**
+Please cite the following paper if you are using our tool. Thank you!
+
+Safranchik Esteban, Shiying Luo, Stephen H. Bach. "Weakly Supervised Sequence Tagging From Noisy Rules". In 34th AAAI Conference on Artificial Intelligence, 2020.
+
+```
+@inproceedings{safranchik2020weakly,
+  title = {Weakly Supervised Sequence Tagging From Noisy Rules}, 
+  author = {Safranchik, Esteban and Luo, Shiying and Bach, Stephen H.}, 
+  booktitle = {AAAI}, 
+  year = 2020, 
+}
+```

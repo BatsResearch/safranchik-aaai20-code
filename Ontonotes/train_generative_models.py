@@ -1,5 +1,5 @@
 from wiser.data.dataset_readers import SrlReaderIOB1
-from wiser.lf import TaggingRule, LinkingRule
+from wiser.rules import TaggingRule, LinkingRule
 from allennlp.data.fields import MetadataField
 from wiser.generative import get_label_to_ix, get_rules
 from labelmodels import *

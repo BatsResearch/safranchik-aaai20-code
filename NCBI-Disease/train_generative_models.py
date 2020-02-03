@@ -1,5 +1,5 @@
 from wiser.data.dataset_readers import NCBIDiseaseDatasetReader
-from wiser.lf import TaggingRule, LinkingRule, UMLSMatcher, DictionaryMatcher
+from wiser.rules import TaggingRule, LinkingRule, UMLSMatcher, DictionaryMatcher
 from wiser.generative import get_label_to_ix, get_rules
 from labelmodels import *
 from wiser.generative import train_generative_model
@@ -7,7 +7,7 @@ from labelmodels import LearningConfig
 from wiser.generative import evaluate_generative_model
 from wiser.data import save_label_distribution
 from wiser.eval import *
-from wiser.lf import ElmoLinkingRule
+from wiser.rules import ElmoLinkingRule
 from collections import Counter
 
 root = "../../data/"

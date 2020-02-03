@@ -1,12 +1,12 @@
 from wiser.data.dataset_readers import LaptopsDatasetReader
-from wiser.lf import TaggingRule, LinkingRule, DictionaryMatcher
+from wiser.rules import TaggingRule, LinkingRule, DictionaryMatcher
 from wiser.generative import get_label_to_ix, get_rules
 from labelmodels import *
 from wiser.generative import train_generative_model
 from labelmodels import LearningConfig
 from wiser.generative import evaluate_generative_model
 from wiser.data import save_label_distribution
-from wiser.lf import ElmoLinkingRule
+from wiser.rules import ElmoLinkingRule
 from wiser.eval import *
 from collections import Counter
 

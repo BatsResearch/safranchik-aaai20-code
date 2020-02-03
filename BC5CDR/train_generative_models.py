@@ -1,5 +1,5 @@
 from wiser.data.dataset_readers.cdr import CDRCombinedDatasetReader
-from wiser.lf import TaggingRule, LinkingRule, DictionaryMatcher
+from wiser.rules import TaggingRule, LinkingRule, DictionaryMatcher
 from wiser.generative import get_label_to_ix, get_rules
 from labelmodels import *
 from wiser.generative import train_generative_model
