@@ -17,7 +17,7 @@ pip install -r requirements.txt
 
 Our experiments depend on *six* different datasets that you will need to download separately.
 
-* BC5CDR:
+* [BC5CDR](https://www.ncbi.nlm.nih.gov/research/bionlp/Data/): Download and install the train, development, and test BioCreative V CDR corpus data files. Place the three separate files inside data/BC5CD
 
 * [NCBI Disease](https://www.ncbi.nlm.nih.gov/CBBresearch/Dogan/DISEASE/): Download and install the complete training, development, and testing sets. Place the three separate files inside *data/NCBI*.
 
