@@ -12,6 +12,10 @@ In your virtual environment, please install the required dependencies using
 ```
 pip install -r requirements.txt
 ```
+Or alternatively
+```
+conda install --file requirements.txt
+```
 
 ## Datasets
 
