@@ -11,4 +11,4 @@ ipywidgets==7.5.1
 ipykernel==5.1.3
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.1.0/en_core_web_sm-2.1.0.tar.gz#egg=en_core_web_sm
 git+git://github.com/BatsResearch/labelmodels
-git+git://github.com/BatsResearch/wiser
+git+git://github.com/BatsResearch/wiser@e68d2e606f31575e9b4e70793f082f4571c6648b
