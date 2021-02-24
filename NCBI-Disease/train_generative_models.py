@@ -42,6 +42,8 @@ for term in dict_core:
 
 dict_core |= to_add
 
+print("✅ loaded dict_core")
+
 # Removes common FP
 dict_core_exact.remove(("WT1",))
 dict_core_exact.remove(("VHL",))
@@ -54,6 +56,7 @@ with open('../data/AutoNER_dicts/NCBI/dict_full.txt') as f:
         line = line.strip().split()
         dict_full.add(tuple(line))
 
+print("✅ loaded dict_full")
 
 lf = DictionaryMatcher(
     "CoreDictionaryUncased",
@@ -62,9 +65,13 @@ lf = DictionaryMatcher(
     i_label="I")
 lf.apply(ncbi_docs)
 
+print("✅🏃‍♂️ run LF_DictionaryMatcher dict_core")
+
 
 lf = DictionaryMatcher("CoreDictionaryExact", dict_core_exact, i_label="I")
 lf.apply(ncbi_docs)
+
+print("✅🏃‍♂️ run LF_DictionaryMatcher dict_core_exact")
 
 
 class CancerLike(TaggingRule):
@@ -83,6 +90,7 @@ class CancerLike(TaggingRule):
 
 lf = CancerLike()
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_CancerLike")
 
 
 class CommonSuffixes(TaggingRule):
@@ -109,6 +117,7 @@ class CommonSuffixes(TaggingRule):
 
 lf = CommonSuffixes()
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_CommonSuffixes")
 
 
 class Deficiency(TaggingRule):
@@ -149,6 +158,7 @@ class Deficiency(TaggingRule):
 
 lf = Deficiency()
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_Deficiency")
 
 
 class Disorder(TaggingRule):
@@ -174,6 +184,7 @@ class Disorder(TaggingRule):
 
 lf = Disorder()
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_Disorder")
 
 
 class Lesion(TaggingRule):
@@ -199,6 +210,7 @@ class Lesion(TaggingRule):
 
 lf = Lesion()
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_Lesion")
 
 
 class Syndrome(TaggingRule):
@@ -224,6 +236,7 @@ class Syndrome(TaggingRule):
 
 lf = Syndrome()
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_Syndrome")
 
 
 terms = []
@@ -257,6 +270,8 @@ class BodyTerms(TaggingRule):
 
 lf = BodyTerms()
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_BodyTerms")
+
 
 for doc in ncbi_docs:
     del doc['WISER_LABELS']['TEMP']
@@ -276,6 +291,7 @@ class OtherPOS(TaggingRule):
 
 lf = OtherPOS()
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_OtherPos")
 
 
 stop_words = {"a", "as", "be", "but", "do", "even",
@@ -299,6 +315,7 @@ class StopWords(TaggingRule):
 
 lf = StopWords()
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_StopWords")
 
 
 class Punctuation(TaggingRule):
@@ -317,6 +334,7 @@ class Punctuation(TaggingRule):
 
 lf = Punctuation()
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_Punctuation")
 
 
 class PossessivePhrase(LinkingRule):
@@ -332,6 +350,7 @@ class PossessivePhrase(LinkingRule):
 
 lf = PossessivePhrase()
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_PossessivePhrase")
 
 
 class HyphenatedPhrase(LinkingRule):
@@ -347,10 +366,13 @@ class HyphenatedPhrase(LinkingRule):
 
 lf = HyphenatedPhrase()
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_HyphenatedPhrase")
+
 
 
 lf = ElmoLinkingRule(.8)
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_ElmoLinkingRule")
 
 
 class CommonBigram(LinkingRule):
@@ -377,6 +399,7 @@ class CommonBigram(LinkingRule):
 
 lf = CommonBigram()
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_CommonBigram")
 
 
 class ExtractedPhrase(LinkingRule):
@@ -427,10 +450,11 @@ class ExtractedPhrase(LinkingRule):
 
 lf = ExtractedPhrase(dict_full)
 lf.apply(ncbi_docs)
+print("✅🏃‍♂️ run LF_ExtractedPhrase")
 
 
 print(score_labels_majority_vote(test_data, span_level=True))
-print('--------------------')
+print('🔥--------------------🔥')
 
 save_label_distribution('output/generative/dev_data.p', dev_data)
 save_label_distribution('output/generative/test_data.p', test_data)
@@ -450,6 +474,7 @@ save_label_distribution(
     'output/generative/train_data_unweighted.p',
     train_data,
     dist)
+print("✅🏃‍♂️ run save_label_distribution")
 
 epochs = 5
 
