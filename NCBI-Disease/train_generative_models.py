@@ -49,7 +49,7 @@ dict_core_exact.remove(("VHL",))
 
 dict_full = set()
 
-with open('../data/autoner_dicts/NCBI/dict_full.txt') as f:
+with open('../data/AutoNER_dicts/NCBI/dict_full.txt') as f:
     for line in f.readlines():
         line = line.strip().split()
         dict_full.add(tuple(line))
